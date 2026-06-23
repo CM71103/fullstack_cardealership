@@ -39,13 +39,41 @@ def login_user(request):
     return JsonResponse(data)
 
 # Create a `logout_request` view to handle sign out request
-# def logout_request(request):
-# ...
+def logout_request(request):
+    logout(request)
+    data = {"username":""}
+    return JsonResponse(data)
 
 # Create a `registration` view to handle sign up request
-# @csrf_exempt
-# def registration(request):
-# ...
+@csrf_exempt
+def registration(request):
+    context={}
+    data = json.loads(request.body)
+    username = data['userName']
+    password = data['password']
+    first_name = data['firstName']
+    last_name = data['lastName']
+    email = data['email']
+    username_exist = False
+    email_exist = False
+    try:
+        # Check if user already exists
+        User.objects.get(username=username)
+        username_exist=True
+    except:
+        # if not simply log this a new user
+        logger.debug("{} is new user".format(username))
+    
+    # if it is new user
+    if username_exist == False:
+        user = User.objects.create_user(username=username,first_name=first_name, last_name=last_name,password=password, email=email)
+        # login the user name and redirect ot list page
+        login(request,user)
+        data = {"userName":username,"status":"Authenticated"}
+        return JsonResponse(data)
+    else:
+        data = {"userName":username,"error":"Already Registered"}
+        return JsonResponse(data)
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
@@ -63,3 +91,14 @@ def login_user(request):
 # Create a `add_review` view to submit a review
 # def add_review(request):
 # ...
+
+# INSTALLED_APPS = [
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+# ]
+# in settings .py automatically import the databases 
+# .auth contains User,permission,Group
+# user is auth_user,group is auth_group

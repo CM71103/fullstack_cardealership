@@ -18,6 +18,7 @@ from .models import CarMake ,CarModel
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 from .populate import initiate
+from .restapis import get_request,analyze_review_sentiments,post_review
 
 # Create your views here.
 
@@ -88,7 +89,17 @@ def registration(request):
 # ...
 
 # Create a `add_review` view to submit a review
-# def add_review(request):
+def add_review(request):
+    if(request.user.is_anonymous==False):
+        data = json.loads(request.body)
+        try:
+            response = post_review(data)
+            return JsonResponse({"status":200})
+        except:
+            return JsonResponse({"status":401,"message":"Error in posting review"})
+    else:
+        return JsonResponse({"status":403,"message":"Unauthorized"})
+
 # ...
 @csrf_exempt
 def get_cars(request):

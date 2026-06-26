@@ -9,8 +9,8 @@ class CarModelInline(admin.TabularInline):
 
 # CarModelAdmin class
 class CarModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'car_make', 'types', 'year')
-    list_filter = ('types', 'year')
+    list_display = ('name', 'car_make', 'type', 'year')
+    list_filter = ('type', 'year')
     search_fields = ('name',)
 
 
